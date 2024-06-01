@@ -1,0 +1,6 @@
+# Ignore all contents of the libraries folder
+/libraries/*
+
+# But allow the snippets folder
+!/libraries/snippets/
+
