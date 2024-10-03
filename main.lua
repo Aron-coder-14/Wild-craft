@@ -1,8 +1,8 @@
-screenWidth, screenHeight = love.window.getDesktopDimensions()
-
+screenWidth, screenHeight = love.graphics.getDimensions()
+love = require 'love'
 -- Make GameStates global
 GameStates = {
-    DEV_MENU = 'GUI.devMenu',
+    DEV_MENU = 'GUI.devMscreenWidth, screenHeight = love.window.getDesktopDimensions()enu',
     HUB = "hub",
     PLATFORMER = "platformer",
     ACTION = "action",
@@ -17,10 +17,11 @@ GameStates = {
     EDUCATIONAL = "educational",
     ARTILLERY = "artillery",
     BEAT_EM_UP = "beat_em_up",
-    INTERACTIVE_FICTION = "interactive_fiction"
+    INTERACTIVE_FICTION = "interactive_fiction",
+    SIMULATOR = require "simulator.simulator",
 }
 
-currentGameState = GameStates.PUZZLE
+currentGameState = GameStates.SIMULATOR
 
 function love.load()
     if currentGameState.load then
