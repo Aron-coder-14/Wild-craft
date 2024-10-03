@@ -2,22 +2,6 @@ screenWidth, screenHeight = love.graphics.getDimensions()
 love = require 'love'
 -- Make GameStates global
 GameStates = {
-    DEV_MENU = 'GUI.devMscreenWidth, screenHeight = love.window.getDesktopDimensions()enu',
-    HUB = "hub",
-    PLATFORMER = "platformer",
-    ACTION = "action",
-    STRATEGY = "strategy",
-    SPORTS = "sports",
-    FIGHTING = "fighting",
-    SHOOTING = "shooting",
-    RACING = "racing",
-    SIDE_SCROLLING_BEAT_EM_UP = "side_scrolling_beat_em_up",
-    STEALTH = "stealth",
-    RHYTHM = "rhythm",
-    EDUCATIONAL = "educational",
-    ARTILLERY = "artillery",
-    BEAT_EM_UP = "beat_em_up",
-    INTERACTIVE_FICTION = "interactive_fiction",
     SIMULATOR = require "simulator.simulator",
 }
 
