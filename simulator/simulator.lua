@@ -18,20 +18,32 @@ local bg_scale_width
 local bg_scale_height
 local bg_height
 local bg_width
-
+local character_desired_height=screenHeight/20
+local character_width_scale, character_height_scale, character_current_width, character_current_height
 function Simulator.load()
     character_image = love.graphics.newImage(character_image_path)
     background_image = love.graphics.newImage(background_image_path)
     camera = Camera(player_x, player_y)
 
-    bg_height=background_image:getHeight()
-    bg_width=background_image:getWidth()
-    bg_scale_width, bg_scale_height=scaler.backgroundscaler(bg_width, bg_height)
+    bg_height = background_image:getHeight()
+    bg_width = background_image:getWidth()
+    bg_scale_width, bg_scale_height = scaler.backgroundscaler(bg_width, bg_height)
+
+    character_current_width, character_current_height = character_image:getDimensions()
+    character_width_scale, character_height_scale = scaler.aspect_ratio_scaler_by_height(character_current_width, character_current_height, character_desired_height)
+
+    -- Calculate zoom factor based on the character's height relative to the screen
+    local zoomFactor = screenHeight / (character_current_height * character_height_scale * 2)
+    camera:zoom(zoomFactor)  -- Apply zoom based on character size
+
+    -- Center the camera on the player's starting position
+    camera:lookAt(player_x, player_y)
 end
 
 function Simulator.update(dt)
+    -- Player movement logic
     if love.keyboard.isDown("right") then
-        is_going_left = false    
+        is_going_left = false
         player_x = player_x + 200 * dt
     end
     if love.keyboard.isDown("left") then
@@ -45,13 +57,14 @@ function Simulator.update(dt)
         player_y = player_y - 200 * dt
     end
 
+    -- Flip the character if going left or right
     if is_going_left then
         flip_horizontal = -1 -- Flip the character when moving left
     else
         flip_horizontal = 1 -- Reset flip when moving right
     end
 
-    -- Update the camera position to center on the player
+    -- Center the camera on the player after moving and zooming
     camera:lookAt(player_x, player_y)
 end
 
@@ -59,7 +72,10 @@ function Simulator.draw()
     camera:attach() -- Attach the camera for all drawings
     -- Draw the background and character
     love.graphics.draw(background_image, 0, 0, 0, bg_scale_width, bg_scale_height)
-    love.graphics.draw(character_image, player_x, player_y, 0, flip_horizontal, 1, character_image:getWidth() / 2, character_image:getHeight() / 2)
+    
+    -- Draw the character with scaling
+    love.graphics.draw(character_image, player_x, player_y, 0, flip_horizontal * character_width_scale, character_height_scale)
+    
     camera:detach() -- Detach the camera after drawing
 end
 
