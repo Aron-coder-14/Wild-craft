@@ -29,9 +29,10 @@ local player = {
     gravity = 800,  -- Gravity force (pixels per second^2)
     jumpForce = -400,  -- Force applied when jumping
     speedX = 0,  -- Horizontal speed (used only in air)
-    maxSpeedX = 300,  -- Maximum horizontal speed in air
-    acceleration = 1000,  -- Horizontal acceleration in air
-    deceleration = 500,  -- Deceleration in air when no input is given
+    maxSpeedX = 300,  -- Maximum horizontal speed
+    currentSpeedX = 0, -- Current horizontal speed
+    acceleration = 1000,  -- Horizontal acceleration
+    deceleration = 500,  -- Deceleration when no input is given
     onGround = false  -- Check if the player is on the ground
 }
 local animatel=require'utils.graphics.animatel'
@@ -52,69 +53,59 @@ function Simulator.load()
     local zoomFactor = (screenHeight / (player.current_height * player.height_scale)) / 9
     camera:zoom(zoomFactor)
 
-    -- Initialize the infiniteBackground module
     infiniteBackground.initialize(background_image, bg_scale_width, screenWidth)
 
     camera:lookAt(player.x, player.y)
 end
 
 function Simulator.update(dt)
+    local targetSpeedX = 0
     local is_moving = false
 
-    -- Check if the player is on the ground
-    if player.onGround then
-        -- Handle normal ground movement
-        if love.keyboard.isDown("right", "d") then
-            is_going_left = false
-            player.x = player.x + player.maxSpeedX * dt
-            is_moving = true
-        elseif love.keyboard.isDown("left", "a") then
-            is_going_left = true
-            player.x = player.x - player.maxSpeedX * dt
-            is_moving = true
-        end
-    else
-         -- Handle inertia in air (jumping)
-         if love.keyboard.isDown("right", "d") then
-            is_going_left = false
-            player.speedX = math.min(player.speedX + player.acceleration * dt, player.maxSpeedX)
-        elseif love.keyboard.isDown("left", "a") then
-            is_going_left = true
-            player.speedX = math.max(player.speedX - player.acceleration * dt, -player.maxSpeedX)
-        else
-            -- Apply deceleration when no key is pressed in air
-            if player.speedX > 0 then
-                player.speedX = math.max(player.speedX - player.deceleration * dt, 0)
-            elseif player.speedX < 0 then
-                player.speedX = math.min(player.speedX + player.deceleration * dt, 0)
-            end
-        end
-
-        -- Update player position with current horizontal speed (in air)
-        player.x = player.x + player.speedX * dt
+    if love.keyboard.isDown("right", "d") then
+        is_going_left = false
+        targetSpeedX = player.maxSpeedX
+        is_moving = true
+    elseif love.keyboard.isDown("left", "a") then
+        is_going_left = true
+        targetSpeedX = -player.maxSpeedX
+        is_moving = true
     end
 
-    -- Update the animation if moving
-    animatel.update(dt, is_moving)
+    -- Smoothly adjust current speed towards target speed
+    if is_moving then
+        if player.currentSpeedX < targetSpeedX then
+            player.currentSpeedX = math.min(player.currentSpeedX + player.acceleration * dt, targetSpeedX)
+        elseif player.currentSpeedX > targetSpeedX then
+            player.currentSpeedX = math.max(player.currentSpeedX - player.acceleration * dt, targetSpeedX)
+        end
+    else
+        -- Decelerate when no movement input
+        if player.currentSpeedX > 0 then
+            player.currentSpeedX = math.max(player.currentSpeedX - player.deceleration * dt, 0)
+        elseif player.currentSpeedX < 0 then
+            player.currentSpeedX = math.min(player.currentSpeedX + player.deceleration * dt, 0)
+        end
+    end
 
+    -- Update player position
+    player.x = player.x + player.currentSpeedX * dt
+
+    -- Update animation with actual speed
+    animatel.update(dt, is_moving, player.currentSpeedX)
 
     flip_horizontal = is_going_left and -1 or 1
 
-    -- Apply gravity to the player
+    -- Apply gravity and check collisions
     Gravity.applyGravity(player, dt)
-
-    -- Check for collision with the floor
     Collisions.checkFloorCollision(player, floorY)
 
     camera:lookAt(player.x, player.y)
-
-    -- Update the infiniteBackground based on the player's position
     infiniteBackground.update(player.x)
 end
 
 function Simulator.keypressed(key)
     if key == "space" and player.onGround then
-        -- Trigger jump only if player is on the ground
         Gravity.jump(player)
     end
 end
@@ -145,6 +136,5 @@ function Simulator.draw()
 
     camera:detach()
 end
-
 
 return Simulator
