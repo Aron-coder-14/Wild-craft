@@ -27,13 +27,14 @@ local player = {
     height = 50,
     speedY = 0,  -- Vertical speed (gravity)
     gravity = 800,  -- Gravity force (pixels per second^2)
-    jumpForce = -400,  -- Force applied when jumping
+    jumpForce = -275,  -- Force applied when jumping
     speedX = 0,  -- Horizontal speed (used only in air)
     maxSpeedX = 300,  -- Maximum horizontal speed
     currentSpeedX = 0, -- Current horizontal speed
     acceleration = 1000,  -- Horizontal acceleration
     deceleration = 500,  -- Deceleration when no input is given
-    onGround = false  -- Check if the player is on the ground
+    onGround = false,  -- Check if the player is on the 
+    health = 50
 }
 local animatel=require'utils.graphics.animatel'
 
@@ -71,6 +72,9 @@ function Simulator.update(dt)
         targetSpeedX = -player.maxSpeedX
         is_moving = true
     end
+    if love.keyboard.isDown("space") and player.onGround then
+        Gravity.jump(player)
+    end
 
     -- Smoothly adjust current speed towards target speed
     if is_moving then
@@ -105,8 +109,12 @@ function Simulator.update(dt)
 end
 
 function Simulator.keypressed(key)
-    if key == "space" and player.onGround then
-        Gravity.jump(player)
+    -- if key == "space" and player.onGround then
+    --     Gravity.jump(player)
+    -- end
+    -- this is where keypressed funcs are called.
+    if key == "k" then
+        player.health = player.health -10
     end
 end
 
@@ -135,6 +143,7 @@ function Simulator.draw()
     love.graphics.draw(current_frame_image, character_draw_x, character_draw_y, 0, flip_horizontal * width_scale, height_scale)
 
     camera:detach()
-end
 
+    love.graphics.print(tostring(player.health),0,0,0,6,6)
+end 
 return Simulator
