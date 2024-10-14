@@ -7,4 +7,5 @@ function love.conf(t)
     t.window.minheight = 300      -- Minimum window height
     t.window.fullscreen = false   -- Start in windowed mode
     t.window.vsync = 1            -- Enable vertical sync
+    t.console=true
 end

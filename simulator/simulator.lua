@@ -7,13 +7,15 @@ local is_going_left = false
 local flip_horizontal = 1
 local background_image_path = "assets/landscape/background.png"
 local background_image
+local death_screen_image
 local camera
 local scaler = require 'utils.graphics.scaler'
 local infiniteBackground = require 'utils.graphics.infiniteBackground'
 local Gravity = require 'utils.physics.gravity'
 local Collisions = require 'utils.physics.collisions'
 local bg_scale_width, bg_scale_height
-local floorY = screenHeight / 1.65  -- This defines the floor position
+local floorY = screenHeight / 1.65                                              
+local DeathScreenImagePath="assets/deathScreen.jpg";
 local player = {
     image_path = "assets/sprites/character_1.png",
     desired_height = screenHeight / 20,
@@ -34,7 +36,8 @@ local player = {
     acceleration = 1000,  -- Horizontal acceleration
     deceleration = 500,  -- Deceleration when no input is given
     onGround = false,  -- Check if the player is on the 
-    health = 50
+    health = 50,
+    is_dead = false 
 }
 local animatel=require'utils.graphics.animatel'
 
@@ -42,6 +45,7 @@ function Simulator.load()
     animatel.loadWalkingAnimation()
     player.image = love.graphics.newImage(player.image_path)
     background_image = love.graphics.newImage(background_image_path)
+    death_screen_image = love.graphics.newImage(DeathScreenImagePath)
     camera = Camera(player.x, player.y)
 
     local bg_height = background_image:getHeight()
@@ -106,6 +110,11 @@ function Simulator.update(dt)
 
     camera:lookAt(player.x, player.y)
     infiniteBackground.update(player.x)
+    print(player.is_dead)
+    if player.health <= 0 then
+        player.is_dead = true
+
+    end
 end
 
 function Simulator.keypressed(key)
@@ -119,31 +128,46 @@ function Simulator.keypressed(key)
 end
 
 function Simulator.draw()
-    camera:attach()
+    if player.is_dead==false then
+        camera:attach()
 
-    -- Draw active backgrounds
-    local activeBackgrounds = infiniteBackground.getActiveBackgrounds()
-    for _, bg in ipairs(activeBackgrounds) do
-        if bg.mirrored then
-            love.graphics.draw(background_image, bg.x + background_image:getWidth() * bg_scale_width, 0, 0, -bg_scale_width, bg_scale_height)
-        else
-            love.graphics.draw(background_image, bg.x, 0, 0, bg_scale_width, bg_scale_height)
+        -- Draw active backgrounds
+        local activeBackgrounds = infiniteBackground.getActiveBackgrounds()
+        for _, bg in ipairs(activeBackgrounds) do
+            if bg.mirrored then
+                love.graphics.draw(background_image, bg.x + background_image:getWidth() * bg_scale_width, 0, 0, -bg_scale_width, bg_scale_height)
+            else
+                love.graphics.draw(background_image, bg.x, 0, 0, bg_scale_width, bg_scale_height)
+            end
         end
+
+        -- Get the current animation frame and its dimensions
+        local current_frame_image, frame_width, frame_height = animatel.getCurrentFrame()
+        
+        -- Scale the character based on the desired height
+        local width_scale, height_scale = scaler.aspect_ratio_scaler_by_height(frame_width, frame_height, player.desired_height)
+        
+        -- Draw the character
+        local character_draw_x = player.x - (frame_width * width_scale / 2)
+        local character_draw_y = player.y - (frame_height * height_scale / 2)
+        love.graphics.draw(current_frame_image, character_draw_x, character_draw_y, 0, flip_horizontal * width_scale, height_scale)
+
+        camera:detach()
+
+        love.graphics.print(tostring(player.health),0,0,0,6,6)
+    
+    else
+        love.graphics.draw(death_screen_image, 30, 60)
+    
+
+
+
+
+
+
+
     end
 
-    -- Get the current animation frame and its dimensions
-    local current_frame_image, frame_width, frame_height = animatel.getCurrentFrame()
     
-    -- Scale the character based on the desired height
-    local width_scale, height_scale = scaler.aspect_ratio_scaler_by_height(frame_width, frame_height, player.desired_height)
-    
-    -- Draw the character
-    local character_draw_x = player.x - (frame_width * width_scale / 2)
-    local character_draw_y = player.y - (frame_height * height_scale / 2)
-    love.graphics.draw(current_frame_image, character_draw_x, character_draw_y, 0, flip_horizontal * width_scale, height_scale)
-
-    camera:detach()
-
-    love.graphics.print(tostring(player.health),0,0,0,6,6)
 end 
 return Simulator
