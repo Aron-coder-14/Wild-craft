@@ -15,7 +15,7 @@ local Gravity = require 'utils.physics.gravity'
 local Collisions = require 'utils.physics.collisions'
 local bg_scale_width, bg_scale_height
 local floorY = screenHeight / 1.65                                              
-local DeathScreenImagePath="assets/deathScreen.jpg";
+local DeathScreenImagePath="assets/deathScreen.png";
 local player = {
     image_path = "assets/sprites/character_1.png",
     desired_height = screenHeight / 20,
@@ -123,7 +123,10 @@ function Simulator.keypressed(key)
     -- end
     -- this is where keypressed funcs are called.
     if key == "k" then
-        player.health = player.health -10
+        player.health = player.health -1
+    end
+    if key == "p" then
+        player.health = player.health +1
     end
 end
 
@@ -157,7 +160,10 @@ function Simulator.draw()
         love.graphics.print(tostring(player.health),0,0,0,6,6)
     
     else
-        love.graphics.draw(death_screen_image, 30, 60)
+        love.graphics.setColor(0,0,0,1)
+        love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
+        love.graphics.setColor(255,255,255,1)
+        love.graphics.draw(death_screen_image, 0, 0)
     
 
 
