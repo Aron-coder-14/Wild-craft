@@ -7,15 +7,13 @@ local is_going_left = false
 local flip_horizontal = 1
 local background_image_path = "assets/landscape/background.png"
 local background_image
-local death_screen_image
 local camera
 local scaler = require 'utils.graphics.scaler'
 local infiniteBackground = require 'utils.graphics.infiniteBackground'
 local Gravity = require 'utils.physics.gravity'
 local Collisions = require 'utils.physics.collisions'
 local bg_scale_width, bg_scale_height
-local floorY = screenHeight / 1.65                                              
-local DeathScreenImagePath="assets/deathScreen.png";
+local floorY = screenHeight / 1.65                        
 local player = {
     image_path = "assets/sprites/character_1.png",
     desired_height = screenHeight / 20,
@@ -45,7 +43,6 @@ function Simulator.load()
     animatel.loadWalkingAnimation()
     player.image = love.graphics.newImage(player.image_path)
     background_image = love.graphics.newImage(background_image_path)
-    death_screen_image = love.graphics.newImage(DeathScreenImagePath)
     camera = Camera(player.x, player.y)
 
     local bg_height = background_image:getHeight()
@@ -115,6 +112,9 @@ function Simulator.update(dt)
         player.is_dead = true
 
     end
+    if player.is_dead then
+        currentGameState = GameStates.DEATH
+    end
 end
 
 function Simulator.keypressed(key)
@@ -123,15 +123,14 @@ function Simulator.keypressed(key)
     -- end
     -- this is where keypressed funcs are called.
     if key == "k" then
-        player.health = player.health -1
+        player.health = player.health -50
     end
     if key == "p" then
-        player.health = player.health +1
+        player.health = player.health +50
     end
 end
 
 function Simulator.draw()
-    if player.is_dead==false then
         camera:attach()
 
         -- Draw active backgrounds
@@ -158,22 +157,7 @@ function Simulator.draw()
         camera:detach()
 
         love.graphics.print(tostring(player.health),0,0,0,6,6)
-    
-    else
-        love.graphics.setColor(0,0,0,1)
-        love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
-        love.graphics.setColor(255,255,255,1)
-        love.graphics.draw(death_screen_image, 0, 0)
-    
-
-
-
-
-
-
-
-    end
-
+  
     
 end 
 return Simulator

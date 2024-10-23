@@ -1,17 +1,23 @@
 screenWidth, screenHeight = love.graphics.getDimensions()
-love = require 'love'
+
 -- Make GameStates global
 GameStates = {
     SIMULATOR = require "simulator.simulator",
+
+    DEATH = require "Death.Death"
 }
 
 currentGameState = GameStates.SIMULATOR
 
 function love.load()
-    if currentGameState.load then
-        currentGameState.load()
+    -- Loop through all game states and call their load function if it exists
+    for _, gameState in pairs(GameStates) do
+        if gameState.load then  -- Check if the game state has a load function
+            gameState.load()
+        end
     end
 end
+
 
 function love.update(dt)
     if currentGameState.update then
