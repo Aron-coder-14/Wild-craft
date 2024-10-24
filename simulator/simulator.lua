@@ -13,30 +13,9 @@ local infiniteBackground = require 'utils.graphics.infiniteBackground'
 local Gravity = require 'utils.physics.gravity'
 local Collisions = require 'utils.physics.collisions'
 local bg_scale_width, bg_scale_height
-local floorY = screenHeight / 1.65                        
-local player = {
-    image_path = "assets/sprites/character_1.png",
-    desired_height = screenHeight / 20,
-    width_scale = 1,
-    height_scale = 1,
-    current_width = 50,
-    current_height = 50,
-    x = screenWidth / 2,
-    y = floorY - 50,  -- Start just above the floor
-    width = 50,
-    height = 50,
-    speedY = 0,  -- Vertical speed (gravity)
-    gravity = 800,  -- Gravity force (pixels per second^2)
-    jumpForce = -275,  -- Force applied when jumping
-    speedX = 0,  -- Horizontal speed (used only in air)
-    maxSpeedX = 300,  -- Maximum horizontal speed
-    currentSpeedX = 0, -- Current horizontal speed
-    acceleration = 1000,  -- Horizontal acceleration
-    deceleration = 500,  -- Deceleration when no input is given
-    onGround = false,  -- Check if the player is on the 
-    health = 50,
-    is_dead = false 
-}
+                        
+
+
 local animatel=require'utils.graphics.animatel'
 
 function Simulator.load()
