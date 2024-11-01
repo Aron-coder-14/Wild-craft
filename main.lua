@@ -4,7 +4,10 @@ screenWidth, screenHeight = love.graphics.getDimensions()
 GameStates = {
     SIMULATOR = require "simulator.simulator",
 
-    DEATH = require "Death.Death"
+    DEATH = require "Death.Death",
+ 
+   SPACE = require "space.space",
+
 }
 floorY = screenHeight / 1.65
  player = {
