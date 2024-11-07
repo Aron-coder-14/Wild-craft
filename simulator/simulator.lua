@@ -13,7 +13,7 @@ local infiniteBackground = require 'utils.graphics.infiniteBackground'
 local Gravity = require 'utils.physics.gravity'
 local Collisions = require 'utils.physics.collisions'
 local bg_scale_width, bg_scale_height
-                        
+local entities = require 'utils.entities.entities'               
 
 
 local animatel=require'utils.graphics.animatel'
@@ -37,6 +37,8 @@ function Simulator.load()
     infiniteBackground.initialize(background_image, bg_scale_width, screenWidth)
 
     camera:lookAt(player.x, player.y)
+
+    entities.load()
 end
 
 function Simulator.update(dt)
@@ -94,6 +96,8 @@ function Simulator.update(dt)
     if player.is_dead then
         currentGameState = GameStates.DEATH
     end
+
+    entities.update(dt, player)
 end
 
 function Simulator.keypressed(key)
@@ -132,9 +136,12 @@ function Simulator.draw()
         local character_draw_x = player.x - (frame_width * width_scale / 2)
         local character_draw_y = player.y - (frame_height * height_scale / 2)
         love.graphics.draw(current_frame_image, character_draw_x, character_draw_y, 0, flip_horizontal * width_scale, height_scale)
-
+        entities.draw()
         camera:detach()
 
+
+
+        
         love.graphics.print(tostring(player.health),0,0,0,6,6)
   
     

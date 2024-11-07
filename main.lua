@@ -35,7 +35,7 @@ floorY = screenHeight / 1.65
     is_dead = false 
 }
 
-currentGameState = GameStates.SPACE
+currentGameState = GameStates.SIMULATOR
 
 function love.load()
     -- Loop through all game states and call their load function if it exists
