@@ -38,7 +38,6 @@ function Simulator.load()
 
     camera:lookAt(player.x, player.y)
 
-    entities.load()
 end
 
 function Simulator.update(dt)
@@ -88,7 +87,6 @@ function Simulator.update(dt)
 
     camera:lookAt(player.x, player.y)
     infiniteBackground.update(player.x)
-    print(player.is_dead)
     if player.health <= 0 then
         player.is_dead = true
 
@@ -138,7 +136,7 @@ function Simulator.draw()
         love.graphics.draw(current_frame_image, character_draw_x, character_draw_y, 0, flip_horizontal * width_scale, height_scale)
         entities.draw()
         camera:detach()
-
+        
 
 
         
