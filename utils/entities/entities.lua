@@ -4,9 +4,14 @@ local entity = {
     y = 0,
     r = 8, 
     hasSpawned = false,
-    speed = 0,
+    speed = 25,
+    attack_radius = 25,
+    damage = 10,
+    cooldown = 0,           -- Timer for the attack cooldown
+    cooldownTime = 2,       -- Cooldown time in seconds
 }
 local spawnRadius = 150  -- Radius within which the entity will spawn around the player
+local canAttack
 
 function entities.load()
     entity.r = 8
@@ -39,6 +44,26 @@ function entities.update(dt, player)
         -- Move the entity towards the player
         entity.x = entity.x + directionX * entity.speed * dt
         entity.y = entity.y + directionY * entity.speed * dt
+    end
+
+    if distanceToPlayer <= entity.attack_radius then
+        canAttack = true
+    else
+        canAttack = false
+    end
+
+    -- Attack logic with cooldown
+    if canAttack then
+        -- Check if the cooldown has expired
+        if entity.cooldown <= 0 then
+            player.health = player.health - entity.damage
+            entity.cooldown = entity.cooldownTime  -- Reset cooldown timer
+        end
+    end
+
+    -- Decrease cooldown over time
+    if entity.cooldown > 0 then
+        entity.cooldown = entity.cooldown - dt
     end
 end 
 
