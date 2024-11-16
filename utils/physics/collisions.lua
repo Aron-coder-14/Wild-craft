@@ -12,4 +12,15 @@ function Collisions.checkFloorCollision(player, floorY)
     end
 end
 
+function Collisions.checkEntityFloorCollision(entity, floorY)
+    -- Simple floor collision detection
+    if entity.y + entity.r / 2 >= floorY then
+        entity.y = floorY - entity.height / 2
+        entity.speedY = 0  -- Stop downward movement when colliding with the floor
+        entity.onGround = true
+    else
+        entity.onGround = false
+    end
+end
+
 return Collisions

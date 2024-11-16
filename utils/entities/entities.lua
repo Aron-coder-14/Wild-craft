@@ -18,7 +18,7 @@ function entities.load()
     entity.speed = love.math.random(25, 50)
 end
 
-function entities.update(dt, player)
+function entities.update(dt, player, floorY)
     -- Spawn the entity around the player if it hasn't spawned yet
     if not entity.hasSpawned then
         -- Calculate a random angle and distance within the spawn radius

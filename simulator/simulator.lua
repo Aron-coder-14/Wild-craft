@@ -95,7 +95,7 @@ function Simulator.update(dt)
         currentGameState = GameStates.DEATH
     end
 
-    entities.update(dt, player)
+    entities.update(dt, player, floorY)
 end
 
 function Simulator.keypressed(key)
