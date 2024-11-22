@@ -4,15 +4,16 @@ local entity = {
     y = 0,
     r = 8, 
     hasSpawned = false,
-    speed = 25,
+    speed = 100,
     attack_radius = 25,
     damage = 10,
-    cooldown = 0,           -- Timer for the attack cooldown
-    cooldownTime = 2,       -- Cooldown time in seconds
+    cooldown = 0,          
+    cooldownTime = 2,
+    onGround,       
 }
 local spawnRadius = 150  -- Radius within which the entity will spawn around the player
 local canAttack
-
+local collisions = require 'utils.physics.collisions'
 function entities.load()
     entity.r = 8
     entity.speed = love.math.random(25, 50)
@@ -64,7 +65,13 @@ function entities.update(dt, player, floorY)
     -- Decrease cooldown over time
     if entity.cooldown > 0 then
         entity.cooldown = entity.cooldown - dt
+
     end
+
+    collisions.checkEntityFloorCollision(entity, floorY)
+
+    
+
 end 
 
 function entities.draw()
