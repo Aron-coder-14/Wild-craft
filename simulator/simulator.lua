@@ -38,6 +38,8 @@ function Simulator.load()
 
     camera:lookAt(player.x, player.y)
 
+    entities.load()
+
 end
 
 function Simulator.update(dt)

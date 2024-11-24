@@ -5,18 +5,38 @@ local entity = {
     r = 8, 
     hasSpawned = false,
     speed = 100,
-    attack_radius = 25,
+    attack_radius = 15,
     damage = 10,
     cooldown = 0,          
-    cooldownTime = 2,
-    onGround,       
+    cooldownTime = 2.5,
+    onGround = false,
+    imagePath = 'assets/sprites/enemy/gorgoyl.png',  -- Fixed typo
+    height = 0  -- Initialize height
 }
+
 local spawnRadius = 150  -- Radius within which the entity will spawn around the player
 local canAttack
 local collisions = require 'utils.physics.collisions'
+local scaler = require 'utils.graphics.scaler'
+
+-- Declare entity_image at the module level so it's accessible in all functions
+local entity_image
+local scaleX, scaleY
+
 function entities.load()
-    entity.r = 8
+    entity.r = 16
     entity.speed = love.math.random(25, 50)
+    -- Load the image
+    entity_image = love.graphics.newImage(entity.imagePath)
+    local entity_image_height = entity_image:getHeight()
+    local entity_image_width = entity_image:getWidth()
+
+    -- Scale the image to match the desired radius
+    scaleX, scaleY = scaler.aspect_ratio_scaler_by_width(entity_image_width, entity_image_height, entity.r * 2)
+    
+    -- Dynamically calculate height after scaling
+    entity.height = entity_image_height * scaleY
+
 end
 
 function entities.update(dt, player, floorY)
@@ -65,18 +85,15 @@ function entities.update(dt, player, floorY)
     -- Decrease cooldown over time
     if entity.cooldown > 0 then
         entity.cooldown = entity.cooldown - dt
-
     end
 
+    -- Check floor collision dynamically using entity.height
     collisions.checkEntityFloorCollision(entity, floorY)
-
-    
-
-end 
+end
 
 function entities.draw()
-    local mode = "fill"
-    love.graphics.circle(mode, entity.x, entity.y, entity.r)
+    -- Ensure the image is drawn using the calculated scale
+    love.graphics.draw(entity_image, entity.x, entity.y, 0, scaleX, scaleY)
 end
 
 return entities
